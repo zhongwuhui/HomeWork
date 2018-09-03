@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.AdminMapperForClass">
+    <resultMap type="com.po.User" id="userMapForClass">
+        <id property="userId" column="userId"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="roleId" column="roleId"/>
+        <result property="userNumber" column="userNumber" />
+    </resultMap>  
+    <resultMap type="com.po.Grade" id="gradeMapForClass">
+        <id property="classId" column="classId" />
+        <result property="className" column="className" />             
+    </resultMap>
+    <!-- resultMap：resultMap的id ，bookName：resultMap的property，即实体类中的属性 -->
+    <parameterMap type="com.po.TeacherAndClass" id="tacMap">
+        <parameter property="user" resultMap="userMapForClass" />  
+        <parameter property="grade" resultMap="gradeMapForClass" />  
+    </parameterMap> 
+    <!-- 为当前班级添加教师 -->
+    <select id="getTeacherById" parameterType="java.lang.String" resultType="User">
+        select * from users where userId = #{userId}
+    </select>
+    <insert id="addTeacherForTheClass" parameterType="Map">
+    <!--  <selectKey keyProperty="classId" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>-->
+        insert into teach_class(classId,userId)
+        value(#{classId},#{userId})
+    </insert>
+    <insert id="insertStudentIntoClass" parameterType="User">
+    <!--  <selectKey keyProperty="classId" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>-->
+        insert into users(userNumber,password,roleId,userName)
+        value(#{userNumber},#{password},#{roleId},#{userName})
+    </insert>
+    <update id="setClassIdForStudent" parameterType="java.lang.String">
+            UPDATE users 
+            SET class=#{classId}
+            ORDER BY userId DESC LIMIT 1
+    </update>
+    <delete id="deleteStudents" parameterType="Integer">
+        DElETE from users where  userId = #{userId}
+    </delete>
+ </mapper>

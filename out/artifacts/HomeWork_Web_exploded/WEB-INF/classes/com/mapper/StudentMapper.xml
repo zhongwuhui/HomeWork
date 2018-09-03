@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.StudentMapper">
+    <resultMap id="classMap" type="com.po.Grade" >  
+        <!--定义班级信息信息-->  
+        <id column="classId" property="classId"/>  
+        <result column="className" property="className"/>   
+        <!-- ofType指定students集合中的对象类型 -->
+            <collection property="users" ofType="com.po.User">
+                <id property="userId" column="userId"/>
+                <result property="userName" column="userName"/>
+                <result property="password" column="password"/>
+                <result property="roleId" column="roleId"/>
+                <result property="userNumber" column="userNumber" />
+                    <collection property="homework" ofType="com.po.HomeWork">
+                        <id property="workId" column="workId"/>
+                        <result property="workDetail" column="workDetail"/>
+                        <result property="createTime" column="createTime"/>
+                    </collection>
+            </collection>
+    </resultMap>
+    <select id="find" parameterType="Map" resultType="HomeWork">
+        SELECT w.workId,w.workDetail,w.createTime,w.workPath,w.workUpPath,w.fileName,w.subjectName,w.userName FROM work w LEFT JOIN class c ON w.classId =c.classId
+        LEFT JOIN users u ON c.classId = u.class
+            <where>
+            <if test=" userName != null and userName!= '' ">
+                and w.userName = #{userName}
+            </if>
+            <if test=" workId != null and workId!= '' ">
+                and w.workId = #{workId}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and w.subjectName = #{subjectName}
+            </if>
+            <if test="workDetail!= null and workDetail!= '' ">
+                and w.workDetail like #{workDetail}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and w.subjectName = #{subjectName}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != '' ">
+                and createTime >= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                and createTime &lt;= #{createTimeEnd}
+            </if>
+                 and u.userId = #{userId}
+            </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT count(w.workId) FROM work w LEFT JOIN class c ON w.classId =c.classId
+        LEFT JOIN users u ON c.classId = u.class
+            <where>
+            <if test=" userName != null and userName!= '' ">
+                and w.userName = #{userName}
+            </if>
+            <if test=" workId != null and workId!= '' ">
+                and w.workId = #{workId}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and w.subjectName = #{subjectName}
+            </if>
+            <if test="workDetail!= null and workDetail!= '' ">
+                and w.workDetail like #{workDetail}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and w.subjectName = #{subjectName}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != '' ">
+                and createTime >= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                and createTime &lt;= #{createTimeEnd}
+            </if>
+                 and u.userId = #{userId}
+            </where>
+    </select>
+ </mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.UserMapper">
+    <resultMap type="com.po.User" id="userMap">
+        <id property="userId" column="userId"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="roleId" column="roleId"/>
+        <result property="userNumber" column="userNumber" />
+    </resultMap>
+    <resultMap type="com.po.Grade" id="userGradeMap" extends="userMap">  
+            <collection property="grades" ofType="com.po.Grade">  
+                <id property="classId" column="classId" />  
+                <result property="className" column="className" />   
+            </collection>  
+    </resultMap>  
+    <select id="findByNumberPassword" parameterType="User" resultMap="userMap">
+        select * from users where userNumber = #{userNumber} and password = #{password}
+    </select>
+    <select id="findUser" parameterType="User" resultMap="userMap">
+        Select * From users Where userNumber = #{userNumber} and password = #{password} and
+        userId in(Select max(userId) from users group by userName)
+    </select>
+    <select id="find" parameterType="Map" resultType="user">
+        SELECT * FROM user
+        <where>
+            <if test=" userNumber!= null and userNumber!= '' ">
+                and userNumber = #{userNumber}
+            </if>
+            <if test="userId!= null and userId!= '' ">
+                and userId = #{userId}
+            </if>
+            <if test="userName != null and userName != '' ">
+                and userName like #{userName}
+            </if>
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <update id="update" parameterType="com.po.User">
+        update users set userName=#{userName},password=#{password} 
+        where userId=#{userId}
+    </update>
+ </mapper>

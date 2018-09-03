@@ -1,0 +1,53 @@
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+.STYLE1 {
+	font-size: 36px;
+	color: #009999;
+	font-family: "方正舒体";
+}
+.right-table03 {
+	margin-top: 16px;
+	margin-bottom: 20px;
+}
+.login-text01 {
+	font-family: "宋体";
+	font-size: 12px;
+	color: #7F9DB9;
+	text-decoration: none;
+}
+a.login-text01:hover {
+	font-family: "宋体";
+	font-size: 12px;
+	color: #FF0000;
+	text-decoration: underline;
+}
+.login-text02 {
+	font-family: "宋体";
+	font-size: 13px;
+	color: #7F9DB9;
+	text-decoration: none;
+	text-align: right;
+	padding-top: 4px;
+}
+.right-button01 {
+	font-family: "宋体";
+	font-size: 12px;
+	color: #174B73;
+	height: 20px;
+	width: 63px;
+	background-image: url(../images/button03.gif);
+	border-width: 0px;
+}
+.right-button02 {
+	font-family: "宋体";
+	font-size: 12px;
+	color: #174B73;
+	height: 20px;
+	width: 45px;
+	background-image: url(../images/button04.gif);
+	border-width: 0px;
+}

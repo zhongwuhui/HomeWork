@@ -1,0 +1,27 @@
+@charset "utf-8";
+
+/*常用样式，包括表格、按钮、工具栏等*/
+
+body,td,div {
+    font-family: "微软雅黑", "宋体", Fixedsys, Arial;
+    font-size:10pt;
+}
+body {
+    background-color:white;
+    padding:0px;margin:0px;
+}
+/* CSS Document */
+body {font: 20px "SimSun", "宋体", "Arial Narrow", HELVETICA; color: #122e67;}
+table.headtable input{ text-align:center; font:13px "SimSun","宋体","Arial Narrow",HELVETICA; color:#122e67; border: 1px solid #999;  height:20px; border-radius:3px; }
+table.headtable font{font-size:14px;}
+table{border-collapse:collapse;border-spacing:0;}
+h2{font-weight:normal;}
+/*html*/
+.tablelist{ border:solid 1px #cbcbcb; width:90%; clear:both; margin:20px auto; }
+.tablelist th{text-align:center; background:#36F; width:40px;   line-height:20px; border:solid 1px #c7c7c7; text-indent:11px; color:#FFF;}
+.tablelist td{text-align:center; width:30px;  line-height:20px;  border-right:solid 1px #c7c7c7; border:solid 1px #cbcbcb;}
+.tablelist tr{ height:20px;}
+.tablelist tr:hover{background:#E0ECFF;}
+td.grey{
+    background-color: #cccccc;
+}

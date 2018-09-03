@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.AdminMapperForSubject">
+ <resultMap id="subjectMap" type="com.po.Subject" >  
+        <!--定义班级信息信息-->  
+        <id column="subjectId" property="subjectId"/>  
+        <result column="subjectName" property="subjectName"/>
+ </resultMap>   
+    <!-- 对科目进行操作 -->
+    <select id="find" parameterType="Map" resultMap="subjectMap">
+        SELECT * FROM subject
+        <where>
+            <if test="subjectName != null and subjectName != '' ">
+                and subjectName like #{subjectName}
+            </if>
+            <if test="subjectId!= null and subjectId != '' ">
+                and subjectId = #{subjectId}
+            </if>
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT count(*) FROM subject
+        <where>
+            <if test="subjectName != null and subjectName != '' ">
+                and subjectName like #{subjectName}
+            </if>
+            <if test="subjectId!= null and subjectId != '' ">
+                and subjectId = #{subjectId}
+            </if>
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <!-- 列举所有老师 -->
+    <select id="listTeachers" parameterType="Map" resultType="User">
+        SELECT u.userId,u.userName,u.userNumber FROM users u LEFT JOIN teach_subject ts ON ts.userId = u.userId LEFT JOIN
+        SUBJECT s ON s.subjectId=ts.subjectId WHERE s.subjectId=#{subjectId}
+    </select>
+    <!-- 添加任课教师 -->
+    <insert id="addTeacherToTheSubject" parameterType="Map">
+        INSERT into teach_subject(userId,subjectId)
+        VALUES (#{userId},#{subjectId})
+    </insert>
+      <!-- 删除任课教师 -->
+     <delete id="deleteTeacherToTheSubject" parameterType="Map">
+        DELETE from teach_subject where userId= #{userId} and subjectId = #{subjectId}
+     </delete>
+     <insert id="add" parameterType="Subject">
+        insert into subject(subjectName) value (#{subjectName})
+     </insert>
+     <!-- 删除科目 -->
+     <delete id="delete"> 
+        delete from subject where subjectId = #{subjectId}
+     </delete>
+ </mapper>

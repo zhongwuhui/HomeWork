@@ -1,0 +1,109 @@
+@charset "utf-8";
+
+/*常用样式，包括表格、按钮、工具栏等*/
+
+body,td,div {
+    font-family: "微软雅黑", "宋体", Fixedsys, Arial;
+    font-size:10pt;
+}
+body {
+    background-color:white;
+    padding:0px;margin:0px;
+}
+.wrap960 {
+    width: 960px;
+    margin: 0 auto;
+    padding: 0;
+}
+/**工具栏*/
+.toolbar{
+    /*background-image: url(images/bg_toolbar.gif);*/
+    background-color: #D9E5F3;
+    border-top:1px solid #99BCE8;
+    padding:3px 3px;
+}
+/**主要内容区域，在toolbar下方*/
+.main {
+    background-color: white;
+}
+.sidebar {
+    background-color:#E7EEF8;
+    width:200px;
+}
+.left {
+    float:left;
+}
+.right {
+    float:right;
+}
+.vspace {
+    padding-bottom:5px;
+}
+.nodata {
+    color:red;
+    font-size:20pt;
+    display:none;
+    text-align:center;
+}
+.loading {
+    color:red;
+    font-size:20pt;
+    display:none;
+    text-align:center;
+}
+
+h2 {
+    font-size:16pt;
+    color:#3A76BE;
+}
+/*一级标题*/
+div.title{
+    background-color:#B0C8E3;color:#00238C;
+    height:40px;
+    text-align: center;
+    font-size: 16pt;
+}
+div.queryForm{
+    text-align: center;
+    font-size: 14pt;
+    padding: 10px;
+}
+
+
+/* ---------- 定义列表表格样式 ------------ */
+TABLE.list {
+    border-collapse: collapse;font-size:10pt;
+    border:solid 1px #c7c7c7;
+}
+
+TABLE.list tr.head {
+    background-color:#EDEEF0;background-image: url(images/bg_th.gif);
+    background-repeat:repeat-x;font-weight:normal;
+    color: black;font-size: 10pt;
+    border-top: 1px solid white;padding-top:8px;padding-bottom:10px;
+    text-align: center;
+    height:24px;
+}
+
+TABLE.list thead a {
+    color:#ffa34f;
+}
+
+TABLE.list tr.selected{
+    background-color:#aadeff;
+}
+TABLE.list tr.even{
+    background-color:#EEEEEE;
+}
+
+TABLE.list th{
+    padding:3px 3px;
+    border: 1px solid #BBBBBB;
+    font-weight:normal;
+}
+TABLE.list td{
+    padding:5px 5px;
+    border: 1px solid #BBBBBB;
+    text-align: center;
+}
+

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.TeacherMapper">
+    <resultMap type="com.po.User" id="teacherMap">
+        <id property="userId" column="userId"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="roleId" column="roleId"/>
+        <result property="userNumber" column="userNumber" />
+        <collection property="homework" ofType="com.po.HomeWork">
+            <id property="workId" column="workId"/>
+            <result property="workDetail" column="workDetail"/>
+            <result property="createTime" column="createTime"/>
+        </collection>
+    </resultMap>
+    <resultMap type="com.po.Grade" id="userGradeMap" extends="teacherMap">  
+            <collection property="grades" ofType="com.po.Grade">  
+                <id property="classId" column="classId" />  
+                <result property="className" column="className" />   
+            </collection>  
+    </resultMap>
+    <resultMap type="com.po.Subject" id="userSubjectMap" extends="teacherMap">  
+            <collection property="users" ofType="com.po.User">  
+                <id property="subjectId" column="subjectId" />  
+                <result property="subjectName" column="subjectName" />   
+            </collection>  
+    </resultMap>
+    <select id="find" parameterType="Map" resultType="HomeWork">
+         SELECT workId,w.workDetail,w.createTime,w.`className`,w.`workPath`,w.workUpPath,w.subjectId,w.subjectName,w.classId
+          FROM WORK w LEFT JOIN class c ON w.classId = c.classId 
+        LEFT JOIN users u ON u.`userId`=w.`userId`
+        <where>
+            <if test=" workId != null and workId!= '' ">
+                and workId = #{workId}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and subjectName = #{subjectName}
+            </if>
+            <if test=" className != null and className!= '' ">
+                and w.className = #{className}
+            </if>
+            <if test="workDetail!= null and workDetail!= '' ">
+                and w.workDetail like #{workDetail}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != '' ">
+                and createTime >= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                and createTime &lt;= #{createTimeEnd}
+            </if>
+                 and u.userId =#{userId}
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT count(w.workId) FROM WORK w LEFT JOIN class c ON w.classId = c.classId 
+        LEFT JOIN users u ON u.`userId`=w.`userId`
+        <where>
+            <if test=" workId != null and workId!= '' ">
+                and workId = #{workId}
+            </if>
+            <if test=" subjectName != null and subjectName!= '' ">
+                and subjectName = #{subjectName}
+            </if>
+            <if test=" className != null and className!= '' ">
+                and w.className = #{className}
+            </if>
+            <if test="workDetail!= null and workDetail!= '' ">
+                and w.workDetail like #{workDetail}
+            </if>
+            <if test="createTimeStart != null and createTimeStart != '' ">
+                and createTime >= #{createTimeStart}
+            </if>
+            <if test="createTimeEnd != null and createTimeEnd != '' ">
+                and createTime &lt;= #{createTimeEnd}
+            </if>
+                 and u.userId =#{userId}
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <update id="update" parameterType="HomeWork">
+        UPDATE work set workDetail = #{workDetail},workUpPath = #{workUpPath}
+        where workId = #{workId}
+    </update>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from work where workId=#{workId}
+    </delete>
+    <insert id="teacherAdd" parameterType="User">
+        <selectKey keyProperty="workId" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into work (userId,userName)
+        select userId,userName
+        from users where users.userId = #{userId}
+    </insert>
+    <!-- 更新作业班级信息 -->
+        <update id="classAdd" parameterType="java.lang.String">
+            UPDATE WORK SET classId = #{classId},className=(SELECT className FROM class WHERE classId=#{classId})  
+            ORDER BY workId DESC LIMIT 1 
+        </update>
+     <!-- 设定学生上传作业路径 -->
+        <update id="setStuUploadPath" parameterType="java.lang.String">  
+            UPDATE work 
+            SET workUpPath=#{workUpPath}
+            ORDER BY workId DESC LIMIT 1
+        </update> 
+        <update id="workAdd" parameterType="homework">  
+            UPDATE work 
+            SET workDetail=#{workDetail}
+            ORDER BY workId DESC LIMIT 1
+        </update>
+        <!-- 设定作业科目 -->
+        <update id="subjectAdd" parameterType="java.lang.String">  
+            UPDATE work 
+            SET subjectId=#{subjectId},subjectName = (SELECT subjectName from subject where subjectId=#{subjectId})
+            ORDER BY workId DESC LIMIT 1
+        </update>
+         <update id="timeAdd" parameterType="homework">  
+            UPDATE work 
+            SET createTime=#{createTime}
+            ORDER BY workId DESC LIMIT 1
+        </update>
+        <!-- 将文件名存入数据库中 -->
+        <update id="setFileName" parameterType="HomeWork">  
+            UPDATE work 
+            SET fileName = #{fileName}
+            where workId = #{workId}
+        </update> 
+    <select id="getGrade" parameterType="User" resultType="Grade">
+        SELECT u.userId, gi.classId AS  
+            classId,gi.className AS className FROM users u LEFT JOIN teach_class ug ON u.userId=ug.userId  
+            LEFT JOIN class gi ON ug.classId=gi.classId WHERE u.userId = #{userId}
+    </select>
+    <select id="getSubject" parameterType="User" resultType="Subject">
+        SELECT s.subjectId,s.subjectName FROM SUBJECT s LEFT JOIN teach_subject ts
+        ON ts.subjectId = s.subjectId LEFT JOIN users u ON u.userId = ts.userId
+        WHERE u.userId=#{userId}
+    </select>
+    <!--  根据作业下达班级获取教师文件上传路径-->
+    <update id="updateTheWorkPathOfNewWork" parameterType="java.lang.String">
+        UPDATE WORK 
+        SET workPath =(
+        SELECT workPath FROM class WHERE classId=#{classId}
+        )
+        ORDER BY workId DESC LIMIT 1
+    </update>
+ </mapper>

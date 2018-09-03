@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ <mapper namespace="com.mapper.AdminMapper">
+ <resultMap id="classMap" type="com.po.Grade" >  
+        <!--定义班级信息信息-->  
+        <id column="classId" property="classId"/>  
+        <result column="className" property="className"/>
+ </resultMap>   
+        <!-- ofType指定students集合中的对象类型 -->
+         <resultMap type="com.po.User" id="gradeUserMap" extends="classMap">  
+            <collection property="users" ofType="User">  
+                <id property="userId" column="userId" />  
+                <result property="userName" column="userName" />  
+                <result property="password" column="password" />  
+                <result property="roleId" column="roleId" /> 
+                <result property="userNumber" column="userNumber" />
+            </collection>  
+        </resultMap> 
+    <select id="getTotal" parameterType="Map" resultType="Long">
+        SELECT count(*) FROM class
+        <where>
+            <if test="classId != null and classId != '' ">
+                and classId = #{classId}
+            </if>
+            <if test="className != null and className != '' ">
+                and className like #{className}
+            </if>
+        </where>
+    </select>
+     <insert id="add" parameterType="Grade">
+        <!-- 
+        将插入数据的主键返回，返回到user对象中       
+        SELECT LAST_INSERT_ID()：得到刚insert进去记录的主键值，只适用与自增主键      
+        keyProperty：将查询到主键值设置到parameterType指定的对象的哪个属性
+        order：SELECT LAST_INSERT_ID()执行顺序，相对于insert语句来说它的执行顺序
+        resultType：指定SELECT LAST_INSERT_ID()的结果类型
+         -->
+        <selectKey keyProperty="classId" order="AFTER" resultType="java.lang.Integer">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into class(className,workPath)
+        value(#{className},#{workPath})
+    </insert>
+    <update id="update" parameterType="Grade">
+        update class set className=#{className},workPath=#{workPath} where
+        classId = #{classId}
+    </update>
+    <update id="updateWorkPath" parameterType="Grade">
+        UPDATE WORK 
+        SET workPath =(
+        SELECT workPath FROM class WHERE classId=#{classId}
+        )
+        WHERE classId = #{classId}
+    </update>
+    <select id="find" parameterType="Map" resultMap="classMap">
+        SELECT * FROM class
+        <where>
+            <if test="className != null and className != '' ">
+                and className like #{className}
+            </if>
+            <if test="classId!= null and classId != '' ">
+                and classId = #{classId}
+            </if>
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <delete id="deleteClassSubject" parameterType="java.lang.Integer">
+        delete from class_subject where classId=#{classId}
+    </delete>
+    <delete id="deleteClassTeaher" parameterType="java.lang.Integer">
+        delete from teach_class where classId=#{classId}
+    </delete>
+    <delete id="deleteClassWork" parameterType="java.lang.Integer">
+        delete from work where classId=#{classId}
+    </delete>
+    <delete id="delete" parameterType="java.lang.Integer">
+        delete from class where classId=#{classId}
+    </delete>
+    <select id="findStu" parameterType="java.lang.Integer" resultType="com.po.User" >
+        select u.userId , u.userName,u.userNumber from users u,class c
+         <where>
+            <if test="userName != null and userName != '' ">
+                and userName like #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != '' ">
+                and userNumber = #{userNumber}
+            </if>
+            <if test="userId!= null and userId != '' ">
+                and userId = #{userId}
+            </if>
+                and u.roleId =2 and u.class = c.classId and c.classId = #{classId}
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotalStu" parameterType="Map" resultType="Long">
+        SELECT count(u.userId) FROM class c,users u
+        <where>
+            <if test="userName != null and userName != '' ">
+                and userName like #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != '' ">
+                and userNumber = #{userNumber}
+            </if>
+            <if test="userId!= null and userId != '' ">
+                and userId = #{userId}
+            </if>
+                and u.roleId =2 and u.class = c.classId and c.classId = #{classId}
+        </where>
+    </select>
+    <!--  获取该班级的老师 -->
+    <select id="findTeacher" parameterType="Map" resultType="User">
+    SELECT u.userId,u.userNumber,u.userName FROM users u LEFT JOIN 
+    teach_class tc ON u.userId = tc.userId and  u.roleId =1 
+    LEFT JOIN class c ON c.classId =tc.classId
+         <where>
+            <if test="userName != null and userName != '' ">
+                and u.userName = #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != '' ">
+                and u.userNumber = #{userNumber}
+            </if>
+            <if test="userId!= null and userId != '' ">
+                and u.userId = #{userId}
+            </if>
+                and c.classId = #{classId}
+        </where>
+        <if test="sort != null and sort != '' ">
+            order by ${sort}
+        </if>
+        <if test="order != null and order != '' ">
+            ${order}
+        </if>
+        <if test="start != null and size != null">
+            limit #{start},#{size}
+        </if>
+    </select>
+    <select id="getTotalTeacher" resultType="Long">
+        SELECT count(u.userId) FROM users u LEFT JOIN 
+    teach_class tc ON u.userId = tc.userId and  u.roleId =1 
+    LEFT JOIN class c ON c.classId =tc.classId
+         <where>
+            <if test="userName != null and userName != '' ">
+                and u.userName = #{userName}
+            </if>
+            <if test="userNumber != null and userNumber != '' ">
+                and u.userNumber = #{userNumber}
+            </if>
+            <if test="userId!= null and userId != '' ">
+                and u.userId = #{userId}
+            </if>
+                and c.classId = #{classId}
+        </where>
+    </select>
+    <update id="setWorkPathOfClass" parameterType="Map">
+        UPDATE class 
+        SET workPath=#{workPath}
+        WHERE  classId=#{classId}
+    </update>
+    <select id="allTeacher" resultType="User">
+        select * from users where roleId=1
+    </select>
+ </mapper>
